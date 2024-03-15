@@ -1,10 +1,10 @@
-define(["easel","sugar-web/datastore","sugar-web/env","l10n","humane"], function (easel, datastore, env, l10n, humane) {
+define(["easel","sugar-web/datastore","sugar-web/env","webL10n","humane"], function (easel, datastore, env, l10n, humane) {
 
 
 	env.getEnvironment(function(err, environment) {
 		var defaultLanguage = (typeof chrome != 'undefined' && chrome.app && chrome.app.runtime) ? chrome.i18n.getUILanguage() : navigator.language;
 		var language = environment.user ? environment.user.language : defaultLanguage;
-		l10n.init(language);
+		l10n.language.code = language;
 		console.log('LANG ' + language);
 	});
 
@@ -1020,7 +1020,6 @@ define(["easel","sugar-web/datastore","sugar-web/env","l10n","humane"], function
             } else if (this._type == TYPE_EXCLAMATION) {
                 this.createShapeExclamation(scaled_x, scaled_y, scale_x, scale_y);
             } else if (this._type == TYPE_RECTANGLE) {
-                // this.createShapeRectangle('image/url');
                 this.createShapeRectangle();
             } else {
                 this.createShapeGlobe(scaled_x, scaled_y, scale_x, scale_y);
@@ -1116,12 +1115,11 @@ define(["easel","sugar-web/datastore","sugar-web/env","l10n","humane"], function
             this._shape.setTransform(0, 0, scale_x, scale_y);
         };
 
-        this.createShapeRectangle = function(imageSrc) {
+        this.createShapeRectangle = function() {
             var x = this._x;
             var y = this._y;
             var w = this._width;
             var h = this._height;
-           
 
             this._shape = new createjs.Shape();
             this._shape.name = 'rect';
@@ -1129,20 +1127,7 @@ define(["easel","sugar-web/datastore","sugar-web/env","l10n","humane"], function
             this._shape.graphics.setStrokeStyle(LINE_WIDTH, "round",
                                                 null, null, true);
             this._shape.graphics.beginStroke(BLACK);
-
-            var image = document.createElement("img");
-            image.crossOrigin = "Anonymous"; // Should work fine
-            image.src = imageSrc;
-            var bitmap = new createjs.Bitmap(image);
-        
-            // var bitmap = new createjs.Bitmap(image);
-            bitmap.x = x - w;
-            bitmap.y = y - h;
-            bitmap.scaleX = image.width;
-            bitmap.scaleY = image.height;
-
-            this._shape.graphics.beginBitmapFill(bitmap.image, "no-repeat");
-            if(!imageSrc) this._shape.graphics.beginFill(WHITE);
+            this._shape.graphics.beginFill(WHITE);
 
             this._shape.graphics.rect(x - w , y - h, w * 2, h * 2);
             this._shape.graphics.endStroke();
@@ -1331,8 +1316,7 @@ define(["easel","sugar-web/datastore","sugar-web/env","l10n","humane"], function
                 this._shapeControls.graphics.endStroke();
 
                 this._shapeControls.visible = this.getSelected();
-                this._stage.addChildAt(this._shapeControls, this._stage.children.length - 1);
-
+                this._stage.addChild(this._shapeControls);
             } else {
                 this._shapeControls.visible = this.getSelected();
                 this._shapeControls.x = x;
@@ -1340,10 +1324,7 @@ define(["easel","sugar-web/datastore","sugar-web/env","l10n","humane"], function
             };
 
             // point position
-            this._stage.addChild(this._shapeControls);
             if (this._type != TYPE_RECTANGLE) {
-                this._stage.addChild(this._pointerControl);
-                this._stage.addChild(this._rotateButton);
 
                 if (this._pointerControl != null &&
                     (this._pointerChanged || this._shapeChanged)) {
@@ -1385,9 +1366,6 @@ define(["easel","sugar-web/datastore","sugar-web/env","l10n","humane"], function
                 };
 
             };
-
-            this._stage.addChild(this._resizeButton);
-            this._stage.addChild(this._editButton);
 
             if (this._resizeButton == null) {
                 createAsyncBitmapButton(this, './icons/resize.svg',
@@ -1459,9 +1437,6 @@ define(["easel","sugar-web/datastore","sugar-web/env","l10n","humane"], function
             };
 
             if (! this._isTitleGlobe) {
-                this._stage.addChild(this._resizeButton);
-                this._stage.addChild(this._editButton);
-                this._stage.addChild(this._removeButton);
                 if (this._removeButton == null) {
                     createAsyncBitmapButton(this, './icons/remove.svg',
                         function(globe, button) {
