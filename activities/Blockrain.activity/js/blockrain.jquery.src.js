@@ -42,8 +42,10 @@
      * Start/Restart Game
      */
     start: function() {
-      this._doStart();
-      this.options.onStart.call(this.element);
+      if(!this._board.started){
+        this._doStart();
+        this.options.onStart.call(this.element);
+      }
     },
 
     restart: function() {
@@ -1465,19 +1467,19 @@
         caught = true;
         if (game.options.asdwKeys) {
           switch(evt.keyCode) {
-            case 65: /*a*/    moveLeft(true); break;
-            case 68: /*d*/    moveRight(true); break;
-            case 83: /*s*/    drop(true); break;
-            case 87: /*w*/    game._board.cur.rotate('right'); break;
+            case 65: /*a*/    moveLeft(true); game.start(); break;
+            case 68: /*d*/    moveRight(true); game.start(); break;
+            case 83: /*s*/    drop(true); game.start(); break;
+            case 87: /*w*/    game._board.cur.rotate('right'); game.start(); break;
           }
         }
         switch(evt.keyCode) {
-          case 37: /*left*/   moveLeft(true); break;
-          case 39: /*right*/  moveRight(true); break;
+          case 37: /*left*/   moveLeft(true); game.start(); break;
+          case 39: /*right*/  moveRight(true); game.start(); break;
           case 40: /*down*/   drop(true); break;
-          case 38: /*up*/     game._board.cur.rotate('right'); break;
-          case 88: /*x*/      game._board.cur.rotate('right'); break;
-          case 90: /*z*/      game._board.cur.rotate('left'); break;
+          case 38: /*up*/     game._board.cur.rotate('right'); game.start(); break;
+          case 88: /*x*/      game._board.cur.rotate('right'); game.start(); break;
+          case 90: /*z*/      game._board.cur.rotate('left'); game.start(); break;
           default: caught = false;
         }
         if (caught) evt.preventDefault();
