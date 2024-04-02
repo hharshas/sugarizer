@@ -410,10 +410,3 @@
 #qrtextdropdown option {
     font-size: 20px;
 }
-
-select {
-    /* Hide the default arrow */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-}
